@@ -21,6 +21,7 @@ const fieldRoutes = require('./routes/fieldRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const apiRoutes = require('./routes');
+const chatRoutes = require('./routes/chatRoutes');
 
 // ================================
 // Khởi tạo app
@@ -80,6 +81,10 @@ app.use((req, res, next) => {
   if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
     return next();
   }
+  // Bỏ qua CSRF cho API routes (AJAX fetch từ chatbox, v.v.)
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
   csrfProtection(req, res, next);
 });
 
@@ -101,6 +106,7 @@ app.use('/owner', ownerRoutes);
 app.use('/', bookingRoutes);
 app.use('/', profileRoutes);
 app.use('/api', apiRoutes);
+app.use('/api', chatRoutes);
 
 // ================================
 // Error Handlers
